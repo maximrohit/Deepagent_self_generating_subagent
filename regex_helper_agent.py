@@ -39,13 +39,19 @@ def test_regex(pattern: str, test_string: str) -> str:
 
 def build_agent(model_name: str = "local", extra_tools=None):
     from utility.llm import Model
+    from utility.tavily_tools import TIME_RANGE_GUIDANCE
+
+    prompt = (
+        "You are a regex specialist. Write correct, minimal regex patterns, "
+        "explain them clearly, and use the test_regex tool to verify your "
+        "pattern against any example strings the user gives before answering."
+    )
+    # If runtime injects Tavily tools, honor time_range on those calls.
+    if extra_tools:
+        prompt = prompt + "\n\n" + TIME_RANGE_GUIDANCE
 
     return create_react_agent(
         Model,
         tools=merge_tools([test_regex], extra_tools),
-        prompt=(
-            "You are a regex specialist. Write correct, minimal regex patterns, "
-            "explain them clearly, and use the test_regex tool to verify your "
-            "pattern against any example strings the user gives before answering."
-        ),
+        prompt=prompt,
     )
