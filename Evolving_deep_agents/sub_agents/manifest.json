@@ -1,0 +1,154 @@
+{
+  "comics_lore_agent": {
+    "name": "comics_lore_agent",
+    "description": "MACRO comics / superhero fiction specialist. Answers lore, character, storyline, and hypothetical matchup questions across comic universes (e.g. Batman, Superman, Super Commando Dhruv, Marvel, DC, Raj Comics). Uses general/news web search with time_range for recent coverage. Does NOT handle finance, equities, or workout planning.",
+    "capabilities": [
+      "Analyzes comic-book characters' abilities, feats, and weaknesses",
+      "Compares peers across universes (e.g. Batman vs Super Commando Dhruv)",
+      "Reasons about prep-time vs no-prep hypothetical confrontations",
+      "Summarizes relevant storylines and continuity with cited search snippets",
+      "Answers open-ended comics lore questions via general/news search"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\comics_lore_agent.py",
+    "content_hash": "2ea4a7f8331a8b738189897e517e51013e5964d50d8a1146a210c2472f925295",
+    "created_at": 1787321965.847605,
+    "module_name": "sub_agents.comics_lore_agent"
+  },
+  "finance_analyst": {
+    "name": "finance_analyst",
+    "description": "Provides SEBI-aligned technical and fundamental analysis for Indian equity tickers, including market sizing, CAGR, and growth runways.",
+    "capabilities": [
+      "Analyzes Indian equity tickers with technical and fundamental methods",
+      "Sizes Indian equity markets and sector trends",
+      "Computes market-cap, CAGR, and growth-runway metrics",
+      "Produces executive summaries with bullish/bearish/neutral verdicts",
+      "Persists complex numerical tables to files for context efficiency"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\finance_analyst.py",
+    "content_hash": "c1f3df083ab29437f880f7e705354382d5fe22b0672aefd8f9cb549af6fb020f",
+    "created_at": 1787324230.7675612,
+    "module_name": "sub_agents.finance_analyst"
+  },
+  "general_research_agent": {
+    "name": "general_research_agent",
+    "description": "A general research and synthesis agent for open-ended questions, providing a foundation for more specialized sub-agents to build upon.",
+    "capabilities": [
+      "Answers open-ended research questions with live web search",
+      "Runs finance-topic web searches for markets and economic data",
+      "Runs news-topic searches for current events and headlines",
+      "Runs general web searches for factual up-to-date snippets",
+      "Synthesizes multi-source findings into a concise answer"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\general_research_agent.py",
+    "content_hash": "b206f76fe86ae2cd5e37ab9503929795e91a0b2004a0e7fe8d534d1a202dbc5a",
+    "created_at": 1787322294.9173858,
+    "module_name": "sub_agents.general_research_agent"
+  },
+  "indian_stock_trader_3m": {
+    "name": "indian_stock_trader_3m",
+    "description": "Provides personalized Indian equity trade recommendations with emphasis on high upside and capital preservation for near-term setups (days to a few months). The SAME agent handles a 1-week question vs a 1-month (or same-day / ~3-month) question by passing time_range=day|week|month|year on finance_web_search. Does NOT replace market_analyst (broad SEBI research), report_reviewer (critique only), or investment_strategist (CIO multi-horizon verdicts on finalized reports).",
+    "capabilities": [
+      "Recommends Indian NSE/BSE stocks for near-term trade setups",
+      "Answers 1-week vs 1-month (and day/year) trade questions via time_range",
+      "Uses finance_web_search with day/week/month/year for live context",
+      "Produces risk-reward analysis including sector, RBI, and SEBI factors",
+      "Outputs a concise buy/sell/hold-style recommendation with confidence",
+      "Avoids full institutional report writing (owned by market_analyst)"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\indian_stock_trader_3m.py",
+    "content_hash": "ffcef35908252fdfe996c3f29c62800498ed05ea52e0b217b31da82b63c7d3d7",
+    "created_at": 1786630380.3567421,
+    "module_name": "sub_agents.indian_stock_trader_3m"
+  },
+  "investment_strategist": {
+    "name": "investment_strategist",
+    "description": "Quant-fundamental decision engine providing multi-horizon buy/sell/hold verdicts for Indian equities. Acts as CIO for an Indian equity fund: reads finalized market report files and issues distinct actions with confidence scores for 1-quarter, 1-year, and 3-year horizons, factoring RBI cycles, festive seasonality, capex cycles, and SEBI regulatory shifts.",
+    "capabilities": [
+      "Issues BUY/SELL/HOLD verdicts across 1Q / 1Y / 3Y horizons",
+      "Assigns quantitative confidence scores (0-100%) per horizon",
+      "Incorporates RBI rates, festive seasonality, and Indian capex cycles",
+      "Factors SEBI regulatory shifts into risk-reward rationale",
+      "Produces a compact investment verdict matrix under 200 words"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\investment_strategist.py",
+    "content_hash": "491139bbb7e6cf82da38760e675f7c7bb8208b6e5e4fdf368181c54d4c0017d1",
+    "created_at": 1786630380.3577464,
+    "module_name": "sub_agents.investment_strategist"
+  },
+  "market_analyst": {
+    "name": "market_analyst",
+    "description": "Quant-driven analyst for Indian equities, market sizing, and sector trends. Performs SEBI-aligned technical and fundamental assessments of NSE/BSE tickers, sector indices, market-cap metrics, CAGR, and growth runways. The SAME agent answers weekly vs monthly (or day/year) research questions by passing time_range on finance_web_search \u2014 it is not locked to one lookback window.",
+    "capabilities": [
+      "Analyzes NSE/BSE tickers with technical and fundamental methods",
+      "Sizes Indian equity markets and sector trends",
+      "Computes market-cap, CAGR, and growth-runway metrics",
+      "Produces executive summaries with bullish/bearish/neutral verdicts",
+      "Persists complex numerical tables to files for context efficiency",
+      "Answers 1-week vs 1-month (day/year) questions via finance_web_search time_range"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\market_analyst.py",
+    "content_hash": "93fb667964af8f5ac886fbe704e9d638621d015a156f454f1e61aebc4847910e",
+    "created_at": 1786630380.359747,
+    "module_name": "sub_agents.market_analyst"
+  },
+  "market_analyst_equity": {
+    "name": "market_analyst_equity",
+    "description": "Provides SEBI-aligned technical and fundamental analysis for Indian equity tickers, including market sizing, CAGR, and growth runways.",
+    "capabilities": [
+      "Analyzes Indian equity tickers with technical and fundamental methods",
+      "Sizes Indian equity markets and sector trends",
+      "Computes market-cap, CAGR, and growth-runway metrics",
+      "Produces executive summaries with bullish/bearish/neutral verdicts",
+      "Persists complex numerical tables to files for context efficiency"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\market_analyst_equity.py",
+    "content_hash": "914a4ce53600d8a05b3518befe4554d948d8cf985ed86a4cf28a047ce83a6f83",
+    "created_at": 1787323434.2317493,
+    "module_name": "sub_agents.market_analyst_equity"
+  },
+  "primary_deep_agent": {
+    "name": "primary_deep_agent",
+    "description": "Primary general-purpose deep agent for research, synthesis, and open-ended questions that benefit from live web data. Uses topic-scoped Tavily search tools (finance, general, news). The SAME agent handles different recency needs (e.g. 1-week vs 1-month vs 1-year questions) by passing time_range=day|week|month|year on each tool call. Prefer specialized sub-agents when a narrower skill clearly fits better.",
+    "capabilities": [
+      "Answers open-ended research questions with live web search",
+      "Runs finance-topic web searches for markets and economic data",
+      "Runs news-topic searches for current events and headlines",
+      "Runs general web searches for factual up-to-date snippets",
+      "Answers 1-week vs 1-month (and day/year) queries via time_range tool arg",
+      "Synthesizes multi-source findings into a concise answer"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\primary_deep_agent.py",
+    "content_hash": "c9bc7c3da08ac5dca266233f4b379400b2f1d3f7032e67d6059d069b700e61a4",
+    "created_at": 1786630380.3607457,
+    "module_name": "sub_agents.primary_deep_agent"
+  },
+  "report_reviewer": {
+    "name": "report_reviewer",
+    "description": "Rigorous financial editor enforcing SEBI data standards and structural logic for Indian equity research reports. Flags missing critical Indian market metrics (P/E, D/E, ROCE, promoter holding, SEBI compliance risks), checks currency/numbering conventions (Crores/Lakhs vs Millions/Billions), and returns a PASS/FAIL critique without rewriting the full report.",
+    "capabilities": [
+      "Critiques Indian equity research reports for SEBI-aligned standards",
+      "Flags missing P/E, D/E, ROCE, promoter holding, and compliance risks",
+      "Enforces consistent Indian (Crores/Lakhs) or Western currency conventions",
+      "Returns high-impact gaps only \u2014 does not rewrite full reports",
+      "Issues PASS/FAIL validation for report finalization"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\report_reviewer.py",
+    "content_hash": "c6f0b5200c3667f52db05ea37525eceae8c0c13aed81567bc6a851fe90fc18cb",
+    "created_at": 1786630380.3617465,
+    "module_name": "sub_agents.report_reviewer"
+  },
+  "us_stock_trader_3m": {
+    "name": "us_stock_trader_3m",
+    "description": "US equity recommendations with flexible horizons. The SAME agent answers 1-week vs 1-month questions by passing time_range on finance_web_search.",
+    "capabilities": [
+      "Analyzes market trends and news",
+      "Answers 1-week vs 1-month US trade questions via time_range",
+      "Provides recommendations based on technical analysis",
+      "Uses finance_web_search with day/week/month/year time_range"
+    ],
+    "file_path": "D:\\Evolving_deep_agents\\sub_agents\\us_stock_trader_3m_2.py",
+    "content_hash": "c032d0ced8dd128d65e3299b5ccfd468db89dc1533cc3ad33f28e40584114128",
+    "created_at": 1787344675.5004895,
+    "module_name": "sub_agents.us_stock_trader_3m_2"
+  }
+}

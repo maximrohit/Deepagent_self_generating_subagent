@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "description": "Catalog of multi-sub-agent workflows. Search-capable stages are time-horizon independent: the same agent handles day/week/month/year questions by passing time_range on Tavily tools. Each flow assigns a specific functional role to every participating sub-agent and lists the problem classes that combination can solve.",
+  "updated_at": "2026-08-21T14:57:10Z",
+  "flows": [
+    {
+      "flow_id": "general_research_agent_composed_flow",
+      "name": "General Research Agent Composed Flow",
+      "description": "A composed flow that leverages the general research capabilities of the general_research_agent to provide a foundation for more specialized sub-agents.",
+      "problem_types": [
+        "Open-ended factual research needing live web data",
+        "Current-events or multi-source summaries without a specialist niche",
+        "1-week vs 1-month research questions answered by the same agent via time_range"
+      ],
+      "example_queries": [
+        "Summarize the latest developments on renewable energy policy this week",
+        "What are the key macro headlines this month?",
+        "Compare this week's vs this month's news on semiconductor supply"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "general_researcher",
+          "agent": "general_research_agent",
+          "function": "gather_live_snippets"
+        },
+        {
+          "order": 2,
+          "role": "research_analyst",
+          "agent": "finance_analyst",
+          "function": "produce_sebi_aligned_analysis"
+        },
+        {
+          "order": 3,
+          "role": "report_critic",
+          "agent": "report_reviewer",
+          "function": "critique_report"
+        },
+        {
+          "order": 4,
+          "role": "cio_strategist",
+          "agent": "investment_strategist",
+          "function": "issue_multi_horizon_buy_sell_hold_verdicts"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "general_web_research",
+      "name": "General Web Research",
+      "description": "Open-ended research and synthesis using topic-scoped finance/general/news search. Horizon-flexible: the same primary_deep_agent handles this-week vs this-month (or day/year) queries via time_range on each tool call.",
+      "problem_types": [
+        "Open-ended factual research needing live web data",
+        "Current-events or multi-source summaries without a specialist niche",
+        "1-week vs 1-month research questions answered by the same agent via time_range"
+      ],
+      "example_queries": [
+        "Summarize the latest developments on renewable energy policy this week",
+        "What are the key macro headlines this month?",
+        "Compare this week's vs this month's news on semiconductor supply"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "general_researcher",
+          "agent": "primary_deep_agent",
+          "function": "Gather live snippets via finance/general/news search with time_range matched to the user horizon; synthesize an answer"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "indian_equity_investment_pipeline",
+      "name": "Indian Equity Investment Pipeline",
+      "description": "End-to-end Indian equity decisioning: research report (horizon via market_analyst time_range) -> SEBI-aligned critique -> multi-horizon CIO verdict. Research stage is not locked to one lookback window.",
+      "problem_types": [
+        "Full Indian equity investment decision for a ticker or sector",
+        "Institutional-style research followed by buy/sell/hold across 1Q/1Y/3Y",
+        "SEBI-compliant report finalization before capital allocation",
+        "Indian equity research scoped to a user-requested window (1 week vs 1 month vs longer) via time_range"
+      ],
+      "example_queries": [
+        "Analyze RELIANCE and give a 1Q/1Y/3Y investment verdict",
+        "Build an Indian equity research pack on banking sector for the past month and recommend action",
+        "Produce a SEBI-aligned report on TCS using this week's data and finalize BUY/SELL/HOLD"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "research_analyst",
+          "agent": "market_analyst",
+          "function": "Produce SEBI-aligned analysis with finance_web_search time_range matched to the user horizon (day/week/month/year); persist detailed tables to files"
+        },
+        {
+          "order": 2,
+          "role": "report_critic",
+          "agent": "report_reviewer",
+          "function": "Critique the report for missing Indian metrics, numbering consistency, and PASS/FAIL"
+        },
+        {
+          "order": 3,
+          "role": "cio_strategist",
+          "agent": "investment_strategist",
+          "function": "Issue multi-horizon BUY/SELL/HOLD verdicts with confidence from the finalized report"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "indian_market_research_only",
+      "name": "Indian Market Research (Report Only)",
+      "description": "Stop after research: SEBI-aligned market analysis without critique or CIO verdict. market_analyst selects time_range (day/week/month/year) from the user's requested lookback.",
+      "problem_types": [
+        "Indian equity/sector research report without an investment action",
+        "Market sizing, CAGR, and fundamental snapshot for NSE/BSE names",
+        "Weekly vs monthly Indian market research via the same market_analyst agent"
+      ],
+      "example_queries": [
+        "Write a fundamental snapshot of HDFC Bank with key metrics for the past month",
+        "Size the Indian EV sector using this week's data",
+        "Compare 1-week vs 1-month sector momentum for IT"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "research_analyst",
+          "agent": "market_analyst",
+          "function": "Produce executive summary + metrics table; pass finance_web_search time_range for the requested window"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "indian_near_term_trade_pick",
+      "name": "Indian Near-Term Trade Pick",
+      "description": "Single-specialist Indian equity trade recommendation. Horizon-flexible: the same indian_stock_trader_3m agent answers 1-week vs 1-month (or day/~3-month) questions by passing time_range on finance_web_search.",
+      "problem_types": [
+        "Near-term Indian stock pick with risk-reward framing",
+        "1-week Indian equity trade idea (time_range=week)",
+        "1-month Indian equity trade idea (time_range=month)",
+        "Dated / same-day NSE/BSE trade setup (time_range=day)"
+      ],
+      "example_queries": [
+        "Recommend one Indian stock for a trade on 13 Aug with high upside and safer downside",
+        "Give a 1-week Indian equity trade idea with confidence",
+        "Give a 1-month Indian equity trade idea with confidence",
+        "Compare a 1-week vs 1-month view for NIFTY banking names"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "near_term_trader",
+          "agent": "indian_stock_trader_3m",
+          "function": "Select and justify an Indian equity trade; set finance_web_search time_range from the user horizon (day/week/month/year)"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "report_quality_gate",
+      "name": "Equity Report Quality Gate",
+      "description": "Critique an existing Indian equity report for SEBI standards and metric gaps. (No live search / time_range \u2014 operates on provided report text.)",
+      "problem_types": [
+        "Review/edit pass on an Indian equity research draft",
+        "PASS/FAIL validation before publishing an equity memo"
+      ],
+      "example_queries": [
+        "Critique this Indian equity report for missing P/E, ROCE, promoter holding",
+        "Is this SEBI-style memo ready to finalize?"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "report_critic",
+          "agent": "report_reviewer",
+          "function": "Flag critical gaps and issue PASS/FAIL without rewriting the full report"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    },
+    {
+      "flow_id": "us_flexible_horizon_trade_pick",
+      "name": "US Flexible-Horizon Trade Pick",
+      "description": "US equity recommendation with high-conviction setups. Horizon-flexible: the same us_stock_trader_3m agent answers 1-week vs 1-month (or day/~3-month) questions via finance_web_search time_range \u2014 not locked to three months only.",
+      "problem_types": [
+        "US stock recommendation for a user-requested horizon (week/month/day/year)",
+        "1-week US equity trade idea (time_range=week)",
+        "1-month / ~3-month US equity trade idea (time_range=month)",
+        "High-conviction US equity trade ideas with risk framing"
+      ],
+      "example_queries": [
+        "Recommend a US stock for a 1-week horizon with high upside",
+        "Recommend a US stock for a 1-month horizon with high upside",
+        "Pick one high-conviction US equity trade for the next quarter",
+        "Compare this week's vs this month's setup for NVDA"
+      ],
+      "stages": [
+        {
+          "order": 1,
+          "role": "us_swing_trader",
+          "agent": "us_stock_trader_3m",
+          "function": "Recommend a US equity for the user-requested horizon using finance_web_search with matching time_range"
+        }
+      ],
+      "status": "active",
+      "missing_agents": []
+    }
+  ]
+}

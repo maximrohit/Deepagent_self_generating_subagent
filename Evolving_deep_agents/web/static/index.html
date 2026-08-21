@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evolving Deep Agents</title>
+  <style>
+    :root {
+      --bg: #f3f0e8;
+      --ink: #1c1a16;
+      --muted: #5c574e;
+      --line: #cfc8b8;
+      --panel: #fffdf8;
+      --accent: #1f4d3a;
+      --accent-soft: #d7e6df;
+      --warn-bg: #f5e6d0;
+      --bad: #7a1f1f;
+      --ok: #1f4d3a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #e7efe9 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #efe6d6 0%, transparent 50%),
+        var(--bg);
+      min-height: 100vh;
+    }
+    main {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+    h1 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-weight: 600;
+      font-size: 1.75rem;
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 1.5rem;
+      font-size: 0.95rem;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      line-height: 1.45;
+    }
+    textarea:disabled { opacity: 0.55; cursor: not-allowed; }
+    .row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    button {
+      font: inherit;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.15rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #f7fff9;
+    }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    button.ghost {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .hint { font-size: 0.85rem; color: var(--muted); }
+    .panel {
+      margin-top: 1.5rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+    .panel h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .meta {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+    .meta strong { color: var(--ink); font-weight: 600; }
+    ol.steps { margin: 0; padding-left: 1.2rem; }
+    ol.steps li { margin: 0.55rem 0; line-height: 1.4; }
+    ol.steps .kind {
+      display: inline-block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin-right: 0.35rem;
+      font-weight: 700;
+    }
+    .answer {
+      white-space: pre-wrap;
+      line-height: 1.55;
+      font-size: 0.98rem;
+    }
+    .feedback {
+      background: var(--warn-bg);
+      border-color: #e0c9a0;
+    }
+    .feedback .choices {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.65rem;
+    }
+    .status {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .status.error { color: var(--bad); }
+    .status.ok { color: var(--ok); }
+    .memory {
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px dashed var(--line);
+      margin-top: 0.9rem;
+      padding-top: 0.75rem;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Evolving Deep Agents</h1>
+    <p class="sub">
+      Ask a question. After the answer, rate it before asking again —
+      feedback stays in memory for follow-ups.
+    </p>
+
+    <label for="question">Your question</label>
+    <textarea id="question" placeholder="Type your question here…"></textarea>
+    <div class="row">
+      <button id="askBtn" type="button">Ask me</button>
+      <span class="hint" id="gateHint"></span>
+    </div>
+    <p class="status" id="status"></p>
+
+    <section class="panel hidden" id="summaryPanel">
+      <h2>Run summary</h2>
+      <div class="meta" id="meta"></div>
+      <h2>Important steps</h2>
+      <ol class="steps" id="steps"></ol>
+    </section>
+
+    <section class="panel hidden" id="answerPanel">
+      <h2>Answer</h2>
+      <div class="answer" id="answer"></div>
+    </section>
+
+    <section class="panel feedback hidden" id="feedbackPanel">
+      <h2>Was this answer satisfactory?</h2>
+      <p class="hint">
+        Feedback is required before the next question. It is stored with the last Q&amp;A for follow-ups.
+      </p>
+      <div class="choices">
+        <button type="button" data-sat="satisfactory">Satisfactory</button>
+        <button type="button" class="ghost" data-sat="ok">OK / partial</button>
+        <button type="button" class="secondary" data-sat="unsatisfactory">Not satisfactory</button>
+      </div>
+      <div class="memory hidden" id="memoryBox"></div>
+    </section>
+  </main>
+
+  <script>
+    const questionEl = document.getElementById("question");
+    const askBtn = document.getElementById("askBtn");
+    const statusEl = document.getElementById("status");
+    const gateHint = document.getElementById("gateHint");
+    const summaryPanel = document.getElementById("summaryPanel");
+    const answerPanel = document.getElementById("answerPanel");
+    const feedbackPanel = document.getElementById("feedbackPanel");
+    const metaEl = document.getElementById("meta");
+    const stepsEl = document.getElementById("steps");
+    const answerEl = document.getElementById("answer");
+    const memoryBox = document.getElementById("memoryBox");
+
+    let sessionId = localStorage.getItem("eda_session_id") || null;
+    let awaitingFeedback = false;
+
+    function setStatus(text, kind) {
+      statusEl.textContent = text || "";
+      statusEl.className = "status" + (kind ? " " + kind : "");
+    }
+
+    function setGate(locked) {
+      awaitingFeedback = locked;
+      askBtn.disabled = locked;
+      questionEl.disabled = locked;
+      gateHint.textContent = locked
+        ? "Rate the answer below before asking another question."
+        : "";
+    }
+
+    function show(el, on) {
+      el.classList.toggle("hidden", !on);
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderResult(data) {
+      sessionId = data.session_id;
+      localStorage.setItem("eda_session_id", sessionId);
+
+      const createdAgents = (data.created_agents || []).join(", ") || "none";
+      const flows = (data.matching_flows || []).join(", ") || "none";
+      const updatedFlows = (data.created_or_updated_flows || []).join(", ") || "none";
+      const agents = (data.matching_agents || []).join(", ") || "none";
+      const entities = (data.entities || []).join(", ") || "none";
+
+      metaEl.innerHTML = `
+        <div><strong>Domain:</strong> ${escapeHtml(data.domain || "—")}</div>
+        <div><strong>Entities:</strong> ${escapeHtml(entities)}</div>
+        <div><strong>Manifest flows used:</strong> ${escapeHtml(flows)}</div>
+        <div><strong>Agents matched:</strong> ${escapeHtml(agents)}</div>
+        <div><strong>New sub-agents created:</strong> ${escapeHtml(createdAgents)}</div>
+        <div><strong>Flows created/updated:</strong> ${escapeHtml(updatedFlows)}</div>
+        <div><strong>Validation:</strong> ${escapeHtml(String(data.validation_verdict || "—"))}
+          (iter ${escapeHtml(String(data.validation_iteration || 1))})</div>
+      `;
+
+      stepsEl.innerHTML = "";
+      (data.steps || []).forEach((step) => {
+        const li = document.createElement("li");
+        li.innerHTML =
+          `<span class="kind">${escapeHtml(step.kind || "step")}</span>` +
+          `<strong>${escapeHtml(step.title || "")}</strong>` +
+          (step.detail ? `<div class="hint">${escapeHtml(step.detail)}</div>` : "");
+        stepsEl.appendChild(li);
+      });
+
+      answerEl.textContent = data.answer || "(empty answer)";
+      show(summaryPanel, true);
+      show(answerPanel, true);
+      show(feedbackPanel, true);
+      show(memoryBox, false);
+      setGate(true);
+    }
+
+    askBtn.addEventListener("click", async () => {
+      const question = questionEl.value.trim();
+      if (!question) {
+        setStatus("Write a question first.", "error");
+        return;
+      }
+      if (awaitingFeedback) {
+        setStatus("Please rate the previous answer first.", "error");
+        return;
+      }
+
+      askBtn.disabled = true;
+      setStatus("Working… this can take a few minutes while agents run.", "");
+      show(summaryPanel, false);
+      show(answerPanel, false);
+      show(feedbackPanel, false);
+
+      try {
+        const res = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, session_id: sessionId }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const detail = data.detail;
+          const msg = Array.isArray(detail)
+            ? detail.map((d) => d.msg || JSON.stringify(d)).join("; ")
+            : (detail || res.statusText || "Ask failed");
+          throw new Error(msg);
+        }
+        renderResult(data);
+        setStatus("Answer ready. Please rate it.", "ok");
+      } catch (err) {
+        setStatus(String(err.message || err), "error");
+        askBtn.disabled = false;
+        questionEl.disabled = false;
+      }
+    });
+
+    feedbackPanel.addEventListener("click", async (ev) => {
+      const btn = ev.target.closest("button[data-sat]");
+      if (!btn || !sessionId) return;
+      const satisfaction = btn.getAttribute("data-sat");
+      setStatus("Saving feedback…", "");
+      try {
+        const res = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId, satisfaction }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.detail || res.statusText || "Feedback failed");
+        }
+        setGate(false);
+        memoryBox.innerHTML =
+          `<strong>Stored for follow-ups:</strong><br/>` +
+          `Q: ${escapeHtml(data.memory.question || "")}<br/>` +
+          `Satisfaction: ${escapeHtml(data.memory.satisfaction || "")}`;
+        show(memoryBox, true);
+        questionEl.value = "";
+        questionEl.focus();
+        setStatus("Feedback saved. You can ask a follow-up now.", "ok");
+      } catch (err) {
+        setStatus(String(err.message || err), "error");
+      }
+    });
+
+    // Restore gate if page reloads mid-feedback (same server process).
+    (async () => {
+      if (!sessionId) return;
+      try {
+        const res = await fetch(`/api/session/${sessionId}`);
+        if (!res.ok) return;
+        const mem = await res.json();
+        if (mem.awaiting_feedback && mem.last_answer) {
+          renderResult({
+            session_id: mem.session_id,
+            answer: mem.last_answer,
+            steps: mem.steps || [],
+            matching_flows: mem.matching_flows || [],
+            matching_agents: mem.matching_agents || [],
+            created_agents: mem.created_agents || [],
+            created_or_updated_flows: mem.created_or_updated_flows || [],
+            domain: mem.domain || "",
+            entities: mem.entities || [],
+            validation_verdict: "",
+            validation_iteration: 1,
+          });
+          if (mem.last_question) questionEl.value = mem.last_question;
+          setStatus("Previous answer still needs a rating.", "ok");
+        } else if (mem.satisfaction && mem.last_question) {
+          memoryBox.innerHTML =
+            `<strong>Last memory:</strong><br/>` +
+            `Q: ${escapeHtml(mem.last_question)}<br/>` +
+            `Satisfaction: ${escapeHtml(mem.satisfaction)}`;
+          show(memoryBox, true);
+          show(feedbackPanel, true);
+        }
+      } catch (_) { /* ignore */ }
+    })();
+  </script>
+</body>
+</html>
